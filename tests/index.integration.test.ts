@@ -24,19 +24,7 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     expect(colonias.length).toBeGreaterThan(0);
     expect(colonias[0]).toHaveProperty('id');
   });
-
-  it('debe devolver un error del API para una colonia que no existe', async () => {
-    const idInexistente = 99999999;
-    const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/${idInexistente}`;
-    console.log(`\n  [INTEGRATION TEST] Buscando colonia con ID inexistente: ${idInexistente}`);
-    console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
-    // Usamos una expresión regular para probar el error 500
-    await expect(client.getColoniaById(idInexistente)).rejects.toThrow(
-      /\[API Error\] 500 Internal Server Error/
-    );
-  });
-
+  
   it('debe obtener los detalles de una colonia específica por un ID válido', async () => {
     const idValido = 88724; // ID de Cañada Blanca
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/${idValido}`;
@@ -45,12 +33,22 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     
     const colonia = await client.getColoniaById(idValido);
     
-    // Verificamos que la respuesta sea un objeto y tenga las propiedades esperadas
     expect(colonia).toBeDefined();
     expect(typeof colonia).toBe('object');
     expect(colonia.id).toBe(idValido);
     expect(colonia.nombre).toBe('Cañada Blanca');
     expect(colonia.estado?.nombre).toBe('Nuevo León');
+  });
+
+  it('debe devolver un error del API para una colonia que no existe', async () => {
+    const idInexistente = 99999999;
+    const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/${idInexistente}`;
+    console.log(`\n  [INTEGRATION TEST] Buscando colonia con ID inexistente: ${idInexistente}`);
+    console.log(`  [INTEGRATION TEST] URL: ${url}`);
+    
+    await expect(client.getColoniaById(idInexistente)).rejects.toThrow(
+      /\[API Error\] 500 Internal Server Error/
+    );
   });
 
   it('debe obtener una lista de estados con la estructura correcta', async () => {
@@ -83,5 +81,48 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const primerMunicipio = respuesta.content[0];
     expect(primerMunicipio).toHaveProperty('id');
     expect(primerMunicipio).toHaveProperty('nombre');
+  });
+
+  it('debe buscar colonias por nombre y filtrar por estado', async () => {
+    const nombre = 'Centro';
+    const estadoId = 19; // Nuevo León
+    const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/search?nombre=${nombre}&estado.id=${estadoId}`;
+    console.log(`\n  [INTEGRATION TEST] Buscando colonias con nombre "${nombre}" en el estado ID ${estadoId}`);
+    console.log(`  [INTEGRATION TEST] URL: ${url}`);
+
+    const colonias = await client.searchColonias({ nombre, estadoId });
+
+    expect(Array.isArray(colonias)).toBe(true);
+    expect(colonias.length).toBeGreaterThan(0);
+    expect(colonias[0]).toHaveProperty('nombre');
+  });
+
+  it('debe obtener una lista paginada de todas las colonias', async () => {
+    const page = 0;
+    const size = 5;
+    const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia?page=${page}&size=${size}`;
+    console.log(`\n  [INTEGRATION TEST] Listando todas las colonias (página ${page}, tamaño ${size})`);
+    console.log(`  [INTEGRATION TEST] URL: ${url}`);
+    
+    const respuesta = await client.listAllColonias({ page, size });
+    
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta.content.length).toBe(size);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de colonias por municipio', async () => {
+    const municipioId = 983; // ID de Guadalupe, NL
+    const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/municipio/${municipioId}`;
+    console.log(`\n  [INTEGRATION TEST] Buscando colonias para el municipio ID: ${municipioId}`);
+    console.log(`  [INTEGRATION TEST] URL: ${url}`);
+
+    const respuesta = await client.getColoniasByMunicipio({ municipioId });
+    
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta.content.length).toBeGreaterThan(0);
+    expect(respuesta).toHaveProperty('totalElements');
   });
 });

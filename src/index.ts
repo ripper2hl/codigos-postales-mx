@@ -83,7 +83,7 @@ export class CodigosPostalesMx {
 
   public listAllColonias(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Colonia>> {
     const { page = 0, size = 33 } = options;
-    return this._request<PaginatedResponse<Colonia>>('/colonia', { page, size });
+    return this._request<PaginatedResponse<Colonia>>('/colonia/', { page, size });
   }
 
   public getColoniasByMunicipio(options: { municipioId: number; page?: number; size?: number }): Promise<PaginatedResponse<Colonia>> {
@@ -106,7 +106,6 @@ export class CodigosPostalesMx {
     return this._request<PaginatedResponse<Municipio>>(`/municipio/estado/${estadoId}`, { page, size });
   }
 
-  // --- NUEVO MÉTODO AÑADIDO ---
   /**
    * Obtiene una lista paginada de todos los estados de México.
    * Corresponde a: GET /v1/estado/
