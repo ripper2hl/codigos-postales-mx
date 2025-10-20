@@ -18,7 +18,7 @@
     "typescript"
   ],
   "author": "Israel Perales",
-  "license": "ISC",
+  "license": "LGPL-3.0-or-later",
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "dotenv": "^17.2.3",
