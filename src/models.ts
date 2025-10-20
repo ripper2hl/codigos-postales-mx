@@ -1,8 +1,9 @@
-// Define la estructura de los objetos que devuelve el API
+// src/models.ts
 
 export interface Estado {
   id: number;
   nombre: string;
+  inegiClave: string; // <-- Propiedad añadida según el OpenAPI
 }
 
 export interface Municipio {

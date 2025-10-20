@@ -1,4 +1,4 @@
-import { Colonia, Municipio, PaginatedResponse } from './models';
+import { Colonia, Estado, Municipio, PaginatedResponse } from './models';
 
 /**
  * Opciones para inicializar el cliente del SDK.
@@ -35,14 +35,10 @@ export class CodigosPostalesMx {
 
   /**
    * Método privado para realizar solicitudes a la API.
-   * @param endpoint El path del recurso a solicitar.
-   * @param params Parámetros de consulta opcionales.
-   * @returns Una promesa que se resuelve con la respuesta del API.
    */
   private async _request<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     if (params) {
-      // Filtra parámetros nulos o indefinidos para no enviarlos.
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           url.searchParams.append(key, String(value));
@@ -108,5 +104,19 @@ export class CodigosPostalesMx {
       return Promise.reject(new Error('El parámetro "estadoId" es requerido.'));
     }
     return this._request<PaginatedResponse<Municipio>>(`/municipio/estado/${estadoId}`, { page, size });
+  }
+
+  // --- NUEVO MÉTODO AÑADIDO ---
+  /**
+   * Obtiene una lista paginada de todos los estados de México.
+   * Corresponde a: GET /v1/estado/
+   * @param options Opciones de paginación (page, size).
+   * @returns Una promesa que se resuelve con la lista paginada de estados.
+   */
+  public listAllEstados(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Estado>> {
+    // El OpenAPI indica que el endpoint es /v1/estado/
+    // Usaremos un tamaño de página por defecto de 32 (el número de estados en México)
+    const { page = 0, size = 32 } = options;
+    return this._request<PaginatedResponse<Estado>>('/estado/', { page, size });
   }
 }
