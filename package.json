@@ -1,6 +1,6 @@
 {
   "name": "codigos-postales-mx",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Un SDK para la API de Códigos Postales de México, escrito en TypeScript.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
