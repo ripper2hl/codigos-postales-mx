@@ -1,5 +1,25 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
     "esModuleInterop": true,
-  }
+    "forceConsistentCasingInFileNames": true,
+    
+    /* Chequeo de Tipos Estricto */
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* Estructura del Proyecto */
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    /* Opciones de Módulos */
+    "resolveJsonModule": true,
+
+    /* Opciones de Emisión */
+    "declaration": true,
+    "sourceMap": true  
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
