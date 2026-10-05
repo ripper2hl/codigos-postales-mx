@@ -1,4 +1,4 @@
-import { CodigosPostalesMx } from '../src/index';
+import { CodigosPostalesMx, CodigosPostalesApiError } from '../src/index';
 
 const apiKey = process.env.RAPIDAPI_KEY;
 const describeIfApiKey = apiKey ? describe : describe.skip;
@@ -46,9 +46,14 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     console.log(`\n  [INTEGRATION TEST] Buscando colonia con ID inexistente: ${idInexistente}`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
     
-    await expect(client.getColoniaById(idInexistente)).rejects.toThrow(
-      /\[API Error\] 500 Internal Server Error/
-    );
+    try {
+      await client.getColoniaById(idInexistente);
+      fail('Debería haber lanzado un error');
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(CodigosPostalesApiError);
+      expect(error.statusCode).toBe(404);
+      expect(error.message).toMatch(/\[API Error\] 404/);
+    }
   });
 
   it('debe obtener una lista de estados con la estructura correcta', async () => {
@@ -124,5 +129,17 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     expect(Array.isArray(respuesta.content)).toBe(true);
     expect(respuesta.content.length).toBeGreaterThan(0);
     expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe lanzar un error si la petición excede el timeout configurado', async () => {
+    // Configuramos un timeout muy pequeño (1ms) para forzar el fallo
+    const clientCorto = new CodigosPostalesMx({ apiKey: apiKey!, timeout: 1 });
+    try {
+      await clientCorto.listAllEstados();
+      fail('Debería haber fallado por timeout');
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(CodigosPostalesApiError);
+      expect(error.message).toMatch(/excedió el tiempo límite de 1ms/);
+    }
   });
 });
