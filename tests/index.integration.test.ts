@@ -17,22 +17,22 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/codigopostal/${cp}`;
     console.log(`\n  [INTEGRATION TEST] Buscando colonias para el CP: ${cp}`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const colonias = await client.getColoniasByCodigoPostal(cp);
 
     expect(Array.isArray(colonias)).toBe(true);
     expect(colonias.length).toBeGreaterThan(0);
     expect(colonias[0]).toHaveProperty('id');
   });
-  
+
   it('debe obtener los detalles de una colonia específica por un ID válido', async () => {
     const idValido = 88724; // ID de Cañada Blanca
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/${idValido}`;
     console.log(`\n  [INTEGRATION TEST] Buscando colonia con ID válido: ${idValido}`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const colonia = await client.getColoniaById(idValido);
-    
+
     expect(colonia).toBeDefined();
     expect(typeof colonia).toBe('object');
     expect(colonia.id).toBe(idValido);
@@ -45,7 +45,7 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/${idInexistente}`;
     console.log(`\n  [INTEGRATION TEST] Buscando colonia con ID inexistente: ${idInexistente}`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     try {
       await client.getColoniaById(idInexistente);
       fail('Debería haber lanzado un error');
@@ -60,7 +60,7 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/estado/`;
     console.log(`\n  [INTEGRATION TEST] Listando todos los estados`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const respuesta = await client.listAllEstados();
 
     expect(respuesta.content).toBeDefined();
@@ -108,9 +108,9 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia?page=${page}&size=${size}`;
     console.log(`\n  [INTEGRATION TEST] Listando todas las colonias (página ${page}, tamaño ${size})`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const respuesta = await client.listAllColonias({ page, size });
-    
+
     expect(respuesta.content).toBeDefined();
     expect(Array.isArray(respuesta.content)).toBe(true);
     expect(respuesta.content.length).toBe(size);
@@ -124,7 +124,7 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
 
     const respuesta = await client.getColoniasByMunicipio({ municipioId });
-    
+
     expect(respuesta.content).toBeDefined();
     expect(Array.isArray(respuesta.content)).toBe(true);
     expect(respuesta.content.length).toBeGreaterThan(0);

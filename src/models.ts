@@ -3,7 +3,7 @@
 export interface Estado {
   id: number;
   nombre: string;
-  inegiClave?: string; 
+  inegiClave?: string;
 }
 
 export interface Municipio {

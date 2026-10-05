@@ -19,16 +19,16 @@ describe('CodigosPostalesMx SDK - Pruebas Unitarias (Mock)', () => {
   });
 
   it('debe llamar a fetch con la URL y cabeceras correctas', async () => {
-    mockFetch.mockResolvedValueOnce({ 
-      ok: true, 
-      json: async () => ({ id: 1, nombre: 'Centro' }) 
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 1, nombre: 'Centro' }),
     });
 
     await client.getColoniaById(1);
-    
+
     expect(mockFetch).toHaveBeenCalledWith(
       'https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/1',
-      expect.anything()
+      expect.anything(),
     );
   });
 
@@ -41,9 +41,7 @@ describe('CodigosPostalesMx SDK - Pruebas Unitarias (Mock)', () => {
     });
 
     // Usamos una expresión regular para una prueba más robusta
-    await expect(client.getColoniaById(999)).rejects.toThrow(
-      /\[API Error\] 404 Not Found/
-    );
+    await expect(client.getColoniaById(999)).rejects.toThrow(/\[API Error\] 404 Not Found/);
   });
 
   it('debe manejar errores genéricos de red', async () => {
@@ -56,12 +54,12 @@ describe('CodigosPostalesMx SDK - Pruebas Unitarias (Mock)', () => {
       ok: false,
       status: 502,
       statusText: 'Bad Gateway',
-      json: async () => { throw new Error('Invalid JSON'); },
+      json: async () => {
+        throw new Error('Invalid JSON');
+      },
     });
 
-    await expect(client.getColoniaById(999)).rejects.toThrow(
-      /\[API Error\] 502 Bad Gateway: Bad Gateway/
-    );
+    await expect(client.getColoniaById(999)).rejects.toThrow(/\[API Error\] 502 Bad Gateway: Bad Gateway/);
   });
 
   it('debe lanzar error si no se manda el municipioId en getColoniasByMunicipio', async () => {
@@ -81,10 +79,10 @@ describe('CodigosPostalesMx SDK - Pruebas Unitarias (Mock)', () => {
 
   it('debe llamar a las rutas correctas para todos los métodos getById', async () => {
     mockFetch.mockResolvedValue({ ok: true, json: async () => ({}) });
-    
+
     await client.getEstadoById(1);
     expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/estado/1'), expect.anything());
-    
+
     await client.getMunicipioById(1);
     expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/municipio/1'), expect.anything());
 
@@ -108,12 +106,12 @@ describe('CodigosPostalesMx SDK - Pruebas Unitarias (Mock)', () => {
   });
 
   it('debe llamar a las rutas correctas para todos los métodos getByName', async () => {
-    mockFetch.mockResolvedValue({ ok: true, json: async () => ([]) });
+    mockFetch.mockResolvedValue({ ok: true, json: async () => [] });
     const n = 'Test';
-    
+
     await client.getEstadoByName(n);
     expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(`/estado/name/${n}`), expect.anything());
-    
+
     await client.getMunicipioByName(n);
     expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(`/municipio/name/${n}`), expect.anything());
 
@@ -133,6 +131,9 @@ describe('CodigosPostalesMx SDK - Pruebas Unitarias (Mock)', () => {
     expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(`/inegiclaveciudad/name/${n}`), expect.anything());
 
     await client.getInegiClaveMunicipioByName(n);
-    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining(`/inegiclavemunicipio/name/${n}`), expect.anything());
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining(`/inegiclavemunicipio/name/${n}`),
+      expect.anything(),
+    );
   });
 });
