@@ -26,6 +26,10 @@
     "sepomex",
     "typescript"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ripper2hl/codigos-postales-mx.git"
+  },
   "author": "Israel Perales",
   "license": "LGPL-3.0-or-later",
   "devDependencies": {

@@ -37,11 +37,8 @@ jobs:
         # aunque si usaste mocks para CI, no será necesario exponer la API key real.
         RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
 
-    - name: Subir reporte a Codecov
-      uses: codecov/codecov-action@v4
+    - name: Subir reporte a Coveralls
+      uses: coverallsapp/github-action@v2
       with:
-        token: ${{ secrets.CODECOV_TOKEN }} # Opcional para repositorios públicos, pero recomendado
-        files: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-codigos-postales-mx
-        fail_ci_if_error: false
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./coverage/lcov.info
