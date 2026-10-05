@@ -8,6 +8,7 @@
     /* Chequeo de Tipos Estricto */
     "strict": true,
     "skipLibCheck": true,
+    "isolatedModules": true,
 
     /* Estructura del Proyecto */
     "outDir": "./dist",

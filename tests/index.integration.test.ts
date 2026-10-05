@@ -1,4 +1,4 @@
-import { CodigosPostalesMx } from '../src/index';
+import { CodigosPostalesMx, CodigosPostalesApiError } from '../src/index';
 
 const apiKey = process.env.RAPIDAPI_KEY;
 const describeIfApiKey = apiKey ? describe : describe.skip;
@@ -17,22 +17,22 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/codigopostal/${cp}`;
     console.log(`\n  [INTEGRATION TEST] Buscando colonias para el CP: ${cp}`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const colonias = await client.getColoniasByCodigoPostal(cp);
 
     expect(Array.isArray(colonias)).toBe(true);
     expect(colonias.length).toBeGreaterThan(0);
     expect(colonias[0]).toHaveProperty('id');
   });
-  
+
   it('debe obtener los detalles de una colonia específica por un ID válido', async () => {
     const idValido = 88724; // ID de Cañada Blanca
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/${idValido}`;
     console.log(`\n  [INTEGRATION TEST] Buscando colonia con ID válido: ${idValido}`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const colonia = await client.getColoniaById(idValido);
-    
+
     expect(colonia).toBeDefined();
     expect(typeof colonia).toBe('object');
     expect(colonia.id).toBe(idValido);
@@ -45,17 +45,22 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia/${idInexistente}`;
     console.log(`\n  [INTEGRATION TEST] Buscando colonia con ID inexistente: ${idInexistente}`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
-    await expect(client.getColoniaById(idInexistente)).rejects.toThrow(
-      /\[API Error\] 500 Internal Server Error/
-    );
+
+    try {
+      await client.getColoniaById(idInexistente);
+      fail('Debería haber lanzado un error');
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(CodigosPostalesApiError);
+      expect(error.statusCode).toBe(404);
+      expect(error.message).toMatch(/\[API Error\] 404/);
+    }
   });
 
   it('debe obtener una lista de estados con la estructura correcta', async () => {
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/estado/`;
     console.log(`\n  [INTEGRATION TEST] Listando todos los estados`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const respuesta = await client.listAllEstados();
 
     expect(respuesta.content).toBeDefined();
@@ -103,9 +108,9 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     const url = `https://codigos-postales-de-mexico1.p.rapidapi.com/v1/colonia?page=${page}&size=${size}`;
     console.log(`\n  [INTEGRATION TEST] Listando todas las colonias (página ${page}, tamaño ${size})`);
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
-    
+
     const respuesta = await client.listAllColonias({ page, size });
-    
+
     expect(respuesta.content).toBeDefined();
     expect(Array.isArray(respuesta.content)).toBe(true);
     expect(respuesta.content.length).toBe(size);
@@ -119,10 +124,71 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     console.log(`  [INTEGRATION TEST] URL: ${url}`);
 
     const respuesta = await client.getColoniasByMunicipio({ municipioId });
-    
+
     expect(respuesta.content).toBeDefined();
     expect(Array.isArray(respuesta.content)).toBe(true);
     expect(respuesta.content.length).toBeGreaterThan(0);
     expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de municipios', async () => {
+    const respuesta = await client.listAllMunicipios({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de códigos postales', async () => {
+    const respuesta = await client.listAllCodigosPostales({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de ciudades', async () => {
+    const respuesta = await client.listAllCiudades({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de tipos de zona', async () => {
+    const respuesta = await client.listAllZonasTipo({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de tipos de asentamiento', async () => {
+    const respuesta = await client.listAllAsentamientosTipo({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de InegiClaveCiudad', async () => {
+    const respuesta = await client.listAllInegiClavesCiudad({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de InegiClaveMunicipio', async () => {
+    const respuesta = await client.listAllInegiClavesMunicipio({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe lanzar un error si la petición excede el timeout configurado', async () => {
+    // Configuramos un timeout muy pequeño (1ms) para forzar el fallo
+    const clientCorto = new CodigosPostalesMx({ apiKey: apiKey!, timeout: 1 });
+    try {
+      await clientCorto.listAllEstados();
+      fail('Debería haber fallado por timeout');
+    } catch (error: any) {
+      expect(error).toBeInstanceOf(CodigosPostalesApiError);
+      expect(error.message).toMatch(/excedió el tiempo límite de 1ms/);
+    }
   });
 });

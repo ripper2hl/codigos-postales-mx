@@ -1,0 +1,44 @@
+name: CI / Pruebas y Cobertura
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: Descargar el código
+      uses: actions/checkout@v4
+
+    - name: Configurar Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Instalar dependencias
+      run: npm ci
+
+    - name: Verificar compilación TypeScript
+      run: npm run build
+
+    - name: Ejecutar pruebas y generar cobertura
+      run: npx jest --coverage
+      env:
+        # Aquí puedes inyectar secretos si tus pruebas de integración lo requieren en CI,
+        # aunque si usaste mocks para CI, no será necesario exponer la API key real.
+        RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+
+    - name: Subir reporte a Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./coverage/lcov.info
