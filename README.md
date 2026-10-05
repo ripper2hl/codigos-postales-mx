@@ -3,6 +3,7 @@
 ![npm](https://img.shields.io/npm/v/codigos-postales-mx)
 ![license](https://img.shields.io/npm/l/codigos-postales-mx)
 ![typescript](https://img.shields.io/badge/TypeScript-Ready-blue)
+[![Coverage Status](https://coveralls.io/repos/github/ripper2hl/codigos-postales-mx/badge.svg?branch=main)](https://coveralls.io/github/ripper2hl/codigos-postales-mx?branch=main)
 
 Un SDK de TypeScript/JavaScript simple, robusto y ligero para interactuar con la **API de Códigos Postales de México** alojada en RapidAPI.
 
