@@ -131,6 +131,55 @@ describeIfApiKey('CodigosPostalesMx SDK - Pruebas de Integración (API Real)', (
     expect(respuesta).toHaveProperty('totalElements');
   });
 
+  it('debe obtener una lista paginada de municipios', async () => {
+    const respuesta = await client.listAllMunicipios({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de códigos postales', async () => {
+    const respuesta = await client.listAllCodigosPostales({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de ciudades', async () => {
+    const respuesta = await client.listAllCiudades({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de tipos de zona', async () => {
+    const respuesta = await client.listAllZonasTipo({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de tipos de asentamiento', async () => {
+    const respuesta = await client.listAllAsentamientosTipo({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de InegiClaveCiudad', async () => {
+    const respuesta = await client.listAllInegiClavesCiudad({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
+  it('debe obtener una lista paginada de InegiClaveMunicipio', async () => {
+    const respuesta = await client.listAllInegiClavesMunicipio({ size: 1 });
+    expect(respuesta.content).toBeDefined();
+    expect(Array.isArray(respuesta.content)).toBe(true);
+    expect(respuesta).toHaveProperty('totalElements');
+  });
+
   it('debe lanzar un error si la petición excede el timeout configurado', async () => {
     // Configuramos un timeout muy pequeño (1ms) para forzar el fallo
     const clientCorto = new CodigosPostalesMx({ apiKey: apiKey!, timeout: 1 });

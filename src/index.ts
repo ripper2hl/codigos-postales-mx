@@ -1,4 +1,4 @@
-import { Colonia, Estado, Municipio, PaginatedResponse } from './models';
+import { Colonia, Estado, Municipio, CodigoPostal, Ciudad, ZonaTipo, AsentamientoTipo, InegiClaveCiudad, InegiClaveMunicipio, PaginatedResponse } from './models';
 import { CodigosPostalesApiError } from './errors';
 
 export * from './models';
@@ -98,85 +98,157 @@ export class CodigosPostalesMx {
     }
   }
 
-  // --- Métodos Públicos ---
+  // --- COLONIA ---
 
-  /**
-   * Busca colonias por nombre, opcionalmente filtrando por estado o municipio.
-   * @param options Opciones de búsqueda (nombre requerido, estadoId y municipioId opcionales).
-   * @returns Una promesa que se resuelve con la lista de colonias encontradas.
-   */
   public searchColonias(options: { nombre: string; estadoId?: number; municipioId?: number }): Promise<Colonia[]> {
     const { nombre, estadoId, municipioId } = options;
-    if (!nombre) {
-      return Promise.reject(new Error('El parámetro "nombre" es requerido.'));
-    }
+    if (!nombre) return Promise.reject(new Error('El parámetro "nombre" es requerido.'));
     const params = { 'nombre': nombre, 'estado.id': estadoId, 'municipio.id': municipioId };
     return this._request<Colonia[]>('/colonia/search', params);
   }
 
-  /**
-   * Obtiene los detalles de una colonia específica por su identificador único.
-   * @param coloniaId ID de la colonia.
-   * @returns Una promesa que se resuelve con los detalles de la colonia.
-   */
   public getColoniaById(coloniaId: number): Promise<Colonia> {
     return this._request<Colonia>(`/colonia/${coloniaId}`);
   }
 
-  /**
-   * Lista todas las colonias registradas en México de forma paginada.
-   * @param options Opciones de paginación (page, size).
-   * @returns Una promesa que se resuelve con la lista paginada de colonias.
-   */
   public listAllColonias(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Colonia>> {
     const { page = 0, size = 33 } = options;
     return this._request<PaginatedResponse<Colonia>>('/colonia/', { page, size });
   }
 
-  /**
-   * Lista de forma paginada las colonias pertenecientes a un municipio específico.
-   * @param options Objeto con el municipioId (requerido) y opciones de paginación (page, size).
-   * @returns Una promesa que se resuelve con la lista paginada de colonias.
-   */
   public getColoniasByMunicipio(options: { municipioId: number; page?: number; size?: number }): Promise<PaginatedResponse<Colonia>> {
     const { municipioId, page = 0, size = 20 } = options;
-    if (!municipioId) {
-      return Promise.reject(new Error('El parámetro "municipioId" es requerido.'));
-    }
+    if (!municipioId) return Promise.reject(new Error('El parámetro "municipioId" es requerido.'));
     return this._request<PaginatedResponse<Colonia>>(`/colonia/municipio/${municipioId}`, { page, size });
   }
 
-  /**
-   * Lista todas las colonias que comparten un mismo código postal.
-   * @param codigoPostal Código postal (5 dígitos).
-   * @returns Una promesa que se resuelve con la lista de colonias correspondientes al código postal.
-   */
   public getColoniasByCodigoPostal(codigoPostal: string): Promise<Colonia[]> {
     return this._request<Colonia[]>(`/colonia/codigopostal/${codigoPostal}`);
   }
 
-  /**
-   * Obtiene una lista paginada de los municipios pertenecientes a un estado específico.
-   * @param options Objeto con el estadoId (requerido) y opciones de paginación (page, size).
-   * @returns Una promesa que se resuelve con la lista paginada de municipios.
-   */
+  // --- ESTADO ---
+
+  public getEstadoById(estadoId: number): Promise<Estado> {
+    return this._request<Estado>(`/estado/${estadoId}`);
+  }
+
+  public listAllEstados(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Estado>> {
+    const { page = 0, size = 32 } = options;
+    return this._request<PaginatedResponse<Estado>>('/estado/', { page, size });
+  }
+
+  public getEstadoByName(nombre: string): Promise<Estado[]> {
+    return this._request<Estado[]>(`/estado/name/${encodeURIComponent(nombre)}`);
+  }
+
+  // --- MUNICIPIO ---
+
+  public getMunicipioById(municipioId: number): Promise<Municipio> {
+    return this._request<Municipio>(`/municipio/${municipioId}`);
+  }
+
+  public listAllMunicipios(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Municipio>> {
+    const { page = 0, size = 50 } = options;
+    return this._request<PaginatedResponse<Municipio>>('/municipio/', { page, size });
+  }
+
   public getMunicipiosByEstado(options: { estadoId: number; page?: number; size?: number }): Promise<PaginatedResponse<Municipio>> {
     const { estadoId, page = 0, size = 20 } = options;
-    if (!estadoId) {
-      return Promise.reject(new Error('El parámetro "estadoId" es requerido.'));
-    }
+    if (!estadoId) return Promise.reject(new Error('El parámetro "estadoId" es requerido.'));
     return this._request<PaginatedResponse<Municipio>>(`/municipio/estado/${estadoId}`, { page, size });
   }
 
-  /**
-   * Obtiene una lista paginada de todos los estados de México.
-   * Corresponde a: GET /v1/estado/
-   * @param options Opciones de paginación (page, size).
-   * @returns Una promesa que se resuelve con la lista paginada de estados.
-   */
-  public listAllEstados(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Estado>> {
-    // Usaremos un tamaño de página por defecto de 32 (el número de estados en México)
-    const { page = 0, size = 32 } = options;
-    return this._request<PaginatedResponse<Estado>>('/estado/', { page, size });
+  public getMunicipioByName(nombre: string): Promise<Municipio[]> {
+    return this._request<Municipio[]>(`/municipio/name/${encodeURIComponent(nombre)}`);
+  }
+
+  // --- CODIGO POSTAL ---
+
+  public getCodigoPostalById(id: number): Promise<CodigoPostal> {
+    return this._request<CodigoPostal>(`/codigopostal/${id}`);
+  }
+
+  public listAllCodigosPostales(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<CodigoPostal>> {
+    const { page = 0, size = 50 } = options;
+    return this._request<PaginatedResponse<CodigoPostal>>('/codigopostal/', { page, size });
+  }
+
+  public getCodigoPostalByName(nombre: string): Promise<CodigoPostal[]> {
+    return this._request<CodigoPostal[]>(`/codigopostal/name/${encodeURIComponent(nombre)}`);
+  }
+
+  // --- CIUDAD ---
+
+  public getCiudadById(id: number): Promise<Ciudad> {
+    return this._request<Ciudad>(`/ciudad/${id}`);
+  }
+
+  public listAllCiudades(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<Ciudad>> {
+    const { page = 0, size = 50 } = options;
+    return this._request<PaginatedResponse<Ciudad>>('/ciudad/', { page, size });
+  }
+
+  public getCiudadByName(nombre: string): Promise<Ciudad[]> {
+    return this._request<Ciudad[]>(`/ciudad/name/${encodeURIComponent(nombre)}`);
+  }
+
+  // --- ZONA TIPO ---
+
+  public getZonaTipoById(id: number): Promise<ZonaTipo> {
+    return this._request<ZonaTipo>(`/zonatipo/${id}`);
+  }
+
+  public listAllZonasTipo(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<ZonaTipo>> {
+    const { page = 0, size = 50 } = options;
+    return this._request<PaginatedResponse<ZonaTipo>>('/zonatipo/', { page, size });
+  }
+
+  public getZonaTipoByName(nombre: string): Promise<ZonaTipo[]> {
+    return this._request<ZonaTipo[]>(`/zonatipo/name/${encodeURIComponent(nombre)}`);
+  }
+
+  // --- ASENTAMIENTO TIPO ---
+
+  public getAsentamientoTipoById(id: number): Promise<AsentamientoTipo> {
+    return this._request<AsentamientoTipo>(`/asentamientotipo/${id}`);
+  }
+
+  public listAllAsentamientosTipo(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<AsentamientoTipo>> {
+    const { page = 0, size = 50 } = options;
+    return this._request<PaginatedResponse<AsentamientoTipo>>('/asentamientotipo/', { page, size });
+  }
+
+  public getAsentamientoTipoByName(nombre: string): Promise<AsentamientoTipo[]> {
+    return this._request<AsentamientoTipo[]>(`/asentamientotipo/name/${encodeURIComponent(nombre)}`);
+  }
+
+  // --- INEGI CLAVE CIUDAD ---
+
+  public getInegiClaveCiudadById(id: number): Promise<InegiClaveCiudad> {
+    return this._request<InegiClaveCiudad>(`/inegiclaveciudad/${id}`);
+  }
+
+  public listAllInegiClavesCiudad(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<InegiClaveCiudad>> {
+    const { page = 0, size = 50 } = options;
+    return this._request<PaginatedResponse<InegiClaveCiudad>>('/inegiclaveciudad/', { page, size });
+  }
+
+  public getInegiClaveCiudadByName(nombre: string): Promise<InegiClaveCiudad[]> {
+    return this._request<InegiClaveCiudad[]>(`/inegiclaveciudad/name/${encodeURIComponent(nombre)}`);
+  }
+
+  // --- INEGI CLAVE MUNICIPIO ---
+
+  public getInegiClaveMunicipioById(id: number): Promise<InegiClaveMunicipio> {
+    return this._request<InegiClaveMunicipio>(`/inegiclavemunicipio/${id}`);
+  }
+
+  public listAllInegiClavesMunicipio(options: { page?: number; size?: number } = {}): Promise<PaginatedResponse<InegiClaveMunicipio>> {
+    const { page = 0, size = 50 } = options;
+    return this._request<PaginatedResponse<InegiClaveMunicipio>>('/inegiclavemunicipio/', { page, size });
+  }
+
+  public getInegiClaveMunicipioByName(nombre: string): Promise<InegiClaveMunicipio[]> {
+    return this._request<InegiClaveMunicipio[]>(`/inegiclavemunicipio/name/${encodeURIComponent(nombre)}`);
   }
 }

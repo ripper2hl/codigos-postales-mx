@@ -73,12 +73,17 @@ Todos los métodos devuelven una `Promise`.
 
 | Método | Parámetros | Retorna | Descripción |
 | :--- | :--- | :--- | :--- |
+| **Colonias** | | | |
 | `getColoniaById` | `coloniaId: number` | `Promise<Colonia>` | Obtiene los detalles de una colonia por su ID. |
 | `getColoniasByCodigoPostal` | `codigoPostal: string` | `Promise<Colonia[]>` | Lista las colonias asociadas a un código postal. |
 | `searchColonias` | `{ nombre, estadoId?, municipioId? }` | `Promise<Colonia[]>` | Busca colonias por nombre, con filtros opcionales. |
 | `listAllColonias` | `{ page?, size? }` | `Promise<PaginatedResponse<Colonia>>` | Lista todas las colonias de forma paginada. |
 | `getColoniasByMunicipio` | `{ municipioId, page?, size? }` | `Promise<PaginatedResponse<Colonia>>` | Lista las colonias de un municipio de forma paginada. |
-| `listAllEstados` | `{ page?, size? }` | `Promise<PaginatedResponse<Estado>>` | Lista todos los estados de México de forma paginada. |
+| **Entidades (Estado, Municipio, Ciudad, etc.)** | | | *El SDK expone métodos similares para `Estado`, `Municipio`, `CodigoPostal`, `Ciudad`, `ZonaTipo`, `AsentamientoTipo`, `InegiClaveCiudad` e `InegiClaveMunicipio`:* |
+| `get{Entidad}ById` | `id: number` | `Promise<T>` | Obtiene los detalles de la entidad por su ID. |
+| `get{Entidad}ByName` | `nombre: string` | `Promise<T[]>` | Busca entidades que coincidan con el nombre proporcionado. |
+| `listAll{Entidades}` | `{ page?, size? }` | `Promise<PaginatedResponse<T>>` | Lista todas las entidades de forma paginada. |
+| **Extras** | | | |
 | `getMunicipiosByEstado` | `{ estadoId, page?, size? }` | `Promise<PaginatedResponse<Municipio>>` | Lista los municipios de un estado de forma paginada. |
 
 ---
@@ -88,13 +93,19 @@ Todos los métodos devuelven una `Promise`.
 Si el API devuelve un error, el método del SDK rechazará la promesa. Utiliza un bloque `try...catch` para manejar estos casos.
 
 ```javascript
+import { CodigosPostalesApiError } from 'codigos-postales-mx';
+
 async function probarError() {
   try {
-    // Este ID es inválido y causará un error
+    // Este ID es inválido y causará un error (404)
     await cliente.getColoniaById(99999999);
   } catch (error) {
-    // El error contendrá el código de estado y el mensaje del API
-    console.error(error.message); 
+    if (error instanceof CodigosPostalesApiError) {
+      console.error(`Error de API: Status ${error.statusCode}`);
+      console.error(error.message); 
+    } else {
+      console.error('Error de red o desconocido:', error);
+    }
   }
 }
 
