@@ -136,4 +136,44 @@ describe('CodigosPostalesMx SDK - Pruebas Unitarias (Mock)', () => {
       expect.anything(),
     );
   });
+
+  it('debe llamar a las rutas correctas para todos los métodos listAll', async () => {
+    mockFetch.mockResolvedValue({ ok: true, json: async () => ({ content: [] }) });
+
+    await client.listAllColonias({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/colonia/?page=1&size=10'), expect.anything());
+
+    await client.listAllEstados({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/estado/?page=1&size=10'), expect.anything());
+
+    await client.listAllMunicipios({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/municipio/?page=1&size=10'), expect.anything());
+
+    await client.listAllCodigosPostales({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/codigopostal/?page=1&size=10'), expect.anything());
+
+    await client.listAllCiudades({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/ciudad/?page=1&size=10'), expect.anything());
+
+    await client.listAllZonasTipo({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/zonatipo/?page=1&size=10'), expect.anything());
+
+    await client.listAllAsentamientosTipo({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/asentamientotipo/?page=1&size=10'),
+      expect.anything(),
+    );
+
+    await client.listAllInegiClavesCiudad({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/inegiclaveciudad/?page=1&size=10'),
+      expect.anything(),
+    );
+
+    await client.listAllInegiClavesMunicipio({ page: 1, size: 10 });
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/inegiclavemunicipio/?page=1&size=10'),
+      expect.anything(),
+    );
+  });
 });
