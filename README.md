@@ -7,6 +7,8 @@
 
 Un SDK de TypeScript/JavaScript simple, robusto y ligero para interactuar con la **API de Códigos Postales de México** alojada en RapidAPI.
 
+📖 **[Ver Documentación Oficial y Referencia de la API](https://ripper2hl.github.io/codigos-postales-mx/)**
+
 Este paquete te permite integrar fácilmente la información de códigos postales, colonias, municipios, estados y más datos geográficos de México en tus proyectos, tanto en el backend (Node.js) como en el frontend.
 
 ---

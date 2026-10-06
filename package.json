@@ -51,5 +51,6 @@
   ],
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "homepage": "https://ripper2hl.github.io/codigos-postales-mx/"
 }
